@@ -4,9 +4,21 @@
 
 The backend of this project is built with Node.js using the Express.js framework. The database is powered by Firebase, ensuring a robust and scalable data storage solution.
 
+## Install
+
+- To run the project you should use a recent Node.js versione (20+).
+
+- To install dependecies run:
+
+```bash
+npm install
+```
+
+
+
 ### Run on your local
 
-To launch the local cloud functions, use the following commands:
+To launch the local cloud functions, use the following commands.:
 
 ```bash
 # Start the authentication functions
@@ -22,68 +34,119 @@ npm run functions:appointments
 npm run functions:doctors
 ```
 
-## Frontend
+You should use a Terminal for each function. When you run a function, ensure that the port is not already in use.
 
-To launch the frontend project, follow these steps:
+Entry point: ```app.js```
 
-```bash
-# Install npm packages
-npm install
+##### Authentication
 
-# Run frontend on dev
-npm run dev
+The authentication is structured through two main endpoints: /signup for registration and /signin for login.
+
+The user can be registered as a patient or a doctor based on the Role passed in the request.
+
+With the login is different. The endpoint will automatically understand if the user who is requesting the login is a Patient or a Doctor.
+
+##### Validation
+
+Done using express-validator to ensure the request body meets the required criteria.
+
+##### Password Handling
+
+bcrypt is used for hashing passwords securely and comparing hashed passwords during login.
+
+##### Token Handling
+
+```generateToken``` is a utility function to create tokens with JWT
+```code
+const generateToken = (data, expiresIn = "1h") =>
+  jwt.sign(data, process.env.JWT_SECRET, { expiresIn });
 ```
 
-## Authentication
+##### Error Handing
 
-You can start the authentication process opening the frontend homepage, you would be redirected to the login page. You can login using these credentials based on the role (Patient/Doctor):
+Each time we got an error we throw a response with the status and the error message.
 
-##### Patient:
-Full name: John Doe
-Email: tectrainpatient@gmail.com
-Password: Test123456!
+```code
+const generateResponse = (status = 500, message = []) => {
+  if (message === undefined) {
+    message = "Invalid message format";
+  }
 
-##### Doctor:
-Full name: Mark Johnson
-Email: tectraindoctor@gmail.com
-Password: Test123456!
+  return {
+    status: status || 500,
+    message,
+  };
+};
+```
 
-Using these credentials you will get mocked appointments, if you want to start with a clean solution you can sign-up (/signup).
+##### Database
 
-**Note**: If you are sign-up as a doctor, after the registration please send a request to the mock endpoints to add available hourly slots to your account:
+Firestore is used as the database, with the db object handling interactions with collection.
 
-![alt text](image.png)
+Collections:
 
-## Patient functionalities
+```
+users
+doctors
+appointments
+```
 
-After the login, the patient will be able to book appointments with doctors and see own upcoming/completed/canceled appointments.
+Document:
 
-The patient can:
+###### User
+```
+{
+  createdAt: string;
+  email: string;
+  fullName: string;
+  password: string;
+  role: string;
+  userId: string
+} 
+```
 
-- View Upcoming/Completed/Canceled appointments
-- Search doctors ("/search") by specialty or name
-- Select a doctor clicking on the card, viewing informations about him
-- Schedule an appointment with the doctor selecting the day and the hour available
+Note: Patients and Doctors are saved here, this entity is collecting only important informations related with the user. They are distinguished by role (PATIENT or DOCTOR)
 
-## Booking functionalities
+###### Doctor
+```
+{
+  availability: Availability[];
+  avatar: string;
+  email: string;
+  experience: string;
+  name: string;
+  qualifications: string[];
+  reviews: Review[];
+  specialty: string;
+  userId: string;
+} 
+```
 
-- To schedule an appointment the patient can go to the doctor research, select a doctor and click on book a meeting
-- If the user try to book a meeting already taken from another patient or by himself, he will get an error message.
-- If the patient schedule an appointment, the appointment will appear also on the doctor appointment dashboard.
+Note: the userId is the same userId of User collection.
 
+May you need that some informations like the email and the name are already declared inside the User document, however, these informations are registered also here because the Patient could need to get some doctor info like the email or the name. Essentially, this structure is exposing public infos to the Patient
 
-## Doctor functionalities
+###### Appointment
+```
+{
+  appointmentId: Availability[];
+  createdAt: string;
+  date: string;
+  doctorName: string;
+  doctorUserId: string;
+  patientName: string;
+  patientUserId: string[];
+  status: Status;
+} 
+```
 
-After the login, the doctor will be able to check in his calendar all the appointments related with the patient on the homepage.
+## Mocks
 
-The doctor can:
+I already prepared some mocks data and some mocks functions. These are better explained inside the frontend documentation. By the way, you can check the ```mock.js``` file to understand what can you do. Practically:
 
-- View Upcoming/Completed/Canceled appointments related with the patient.
-
-You can add some mocked appointments using this endpoint with the following body:
-
-![alt text](image-1.png)
-
+- You can add mock doctor data (like availability) passing the email of the doctor user
+- You can add new doctors sending the request without passing a body
+- You can create mock appointments passing doctorUserId and patientUserId
 
 
 
