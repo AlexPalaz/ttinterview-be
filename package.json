@@ -1,0 +1,44 @@
+{
+  "name": "tectraininterview-be",
+  "version": "1.0.0",
+  "description": "Tech Train Interview",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "nodemon src/app.js",
+    "functions:auth": "npx @google-cloud/functions-framework --target=auth --port=33333",
+    "functions:mocks": "npx @google-cloud/functions-framework --target=mocks --port=55555",
+    "functions:doctors": "npx @google-cloud/functions-framework --target=doctors --port=22222",
+    "functions:appointments": "npx @google-cloud/functions-framework --target=appointments --port=44444",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "node",
+    "express"
+  ],
+  "author": "Alessandro Palazzesi",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.14.8",
+    "@babel/preset-env": "^7.14.8",
+    "@faker-js/faker": "^8.4.1",
+    "eslint": "^8.49.0",
+    "eslint-plugin-node": "^11.1.0",
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.4.2",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.1.0",
+    "firebase": "^10.12.4",
+    "firebase-admin": "^12.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "^3.3.4"
+  }
+}
