@@ -60,7 +60,7 @@ router.post(
 
       const token = generateToken({
         email: user.email,
-        userId: user.password,
+        userId: user.userId,
         role: user.role,
         fullName: user.fullName,
       });
